@@ -13,7 +13,7 @@ public class Client : MonoBehaviour {
     public GameObject listContainer;
     public GameObject messagePrefab;
 
-    public string clientName;
+    private string clientName = "Guest";
 
     private bool socketReady;
     private TcpClient socket;
@@ -35,6 +35,7 @@ public class Client : MonoBehaviour {
 
         string h;
         int p;
+        string n;
 
         h = GameObject.Find("HostInput").GetComponent<InputField>().text;
 
@@ -46,6 +47,12 @@ public class Client : MonoBehaviour {
         if(p != 0)
         {
             port = p;
+        }
+
+        n = GameObject.Find("NameInput").GetComponent<InputField>().text;
+        if (n != "")
+        {
+            clientName = n;
         }
 
         //create the socket
@@ -101,13 +108,13 @@ public class Client : MonoBehaviour {
         writer.WriteLine(data);
         writer.Flush();
     }
-
+    /*
     public void OnSendButton()
     {
         string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
         Send(message);
     }
-
+*/
     private void CloseSocket()
     {
         if (!socketReady)

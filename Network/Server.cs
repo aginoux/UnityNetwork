@@ -86,6 +86,7 @@ public class Server : MonoBehaviour
     {
         server.BeginAcceptTcpClient(AcceptTcpClient, server);
     }
+
     private bool IsConnected(TcpClient c)
     {
         try
@@ -108,6 +109,7 @@ public class Server : MonoBehaviour
             return false;
         }
     }
+
     private void AcceptTcpClient(IAsyncResult ar)
     {
         TcpListener listener = (TcpListener)ar.AsyncState;
@@ -127,11 +129,18 @@ public class Server : MonoBehaviour
         if (data.Contains("&NAME"))
         {
             c.clientName = data.Split('|')[1];
-            Broadcast(c.clientName + "has connected", clients);
+            //Broadcast(c.clientName + " has connected", clients);
+            AddDeviceToPanelList(c.clientName);
             return;
         }
 
         Broadcast(c.clientName + " : " + data,clients);
+    }
+
+    private void AddDeviceToPanelList(string name)
+    {
+        GameObject go = Instantiate(messagePrefab, listContainer.transform) as GameObject;
+        go.GetComponentInChildren<Text>().text = name;
     }
 
     private void Broadcast(string data, List<ServerClient> cl)
@@ -149,6 +158,17 @@ public class Server : MonoBehaviour
                 Debug.Log("Write error : " + e.Message + " to client : " + c.clientName);
             }
         }
+    }
+
+    private void Send(string data)
+    {
+        Broadcast(" server has sent " + data, clients);        
+    }
+
+    public void OnSendButton()
+    {
+        string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
+        Send(message);
     }
 }
 
