@@ -12,6 +12,7 @@ public class Server : MonoBehaviour
 
     public GameObject listContainer;
     public GameObject messagePrefab;
+    private GameObject[] prefabTab;
 
     private List<ServerClient> clients;
     private List<ServerClient> disconnectList;
@@ -24,7 +25,8 @@ public class Server : MonoBehaviour
     {
         clients = new List<ServerClient>();
         disconnectList = new List<ServerClient>();
-
+        prefabTab = new GameObject[16];
+        
         try
         {
             server = new TcpListener(IPAddress.Any, port);
@@ -75,8 +77,8 @@ public class Server : MonoBehaviour
 
         for(int i = 0; i < disconnectList.Count - 1; i++)
         {
-            Broadcast(disconnectList[i].clientName + " has disconnected ", clients);
-
+            //Broadcast(disconnectList[i].clientName + " has disconnected ", clients);
+            RemoveDeviceToPanelList(disconnectList[i].clientName);
             clients.Remove(disconnectList[1]);
             disconnectList.RemoveAt(i);
         }
@@ -141,6 +143,26 @@ public class Server : MonoBehaviour
     {
         GameObject go = Instantiate(messagePrefab, listContainer.transform) as GameObject;
         go.GetComponentInChildren<Text>().text = name;
+
+        for(int i = 0; i < prefabTab.Length; i++)
+        {
+            if(prefabTab[i] == null)
+            {
+                prefabTab[i] = go;
+            }
+        }
+
+    }
+
+    private void RemoveDeviceToPanelList(string name)
+    {
+        for (int i = 0; i < prefabTab.Length; i++)
+        {
+            if(prefabTab[i].GetComponentInChildren<Text>().text == name)
+            {
+                Destroy(prefabTab[i]);
+            }
+        }
     }
 
     private void Broadcast(string data, List<ServerClient> cl)
@@ -167,7 +189,8 @@ public class Server : MonoBehaviour
 
     public void OnSendButton()
     {
-        string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
+        //string message = GameObject.Find("SendInput").GetComponent<InputField>().text;
+        string message = "heart.png|image";
         Send(message);
     }
 }

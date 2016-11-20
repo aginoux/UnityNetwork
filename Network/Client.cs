@@ -93,6 +93,13 @@ public class Client : MonoBehaviour {
             return;
         }
 
+        if (data.Contains("|image"))
+        {
+            string image_name = data.Split('|')[0];
+            StartCoroutine(DownloadImageFromServer(image_name));
+            return;
+        }
+
         //Debug.Log("Server : " + data);
         GameObject go =  Instantiate(messagePrefab, listContainer.transform) as GameObject;
         go.GetComponentInChildren<Text>().text = data;
@@ -108,6 +115,7 @@ public class Client : MonoBehaviour {
         writer.WriteLine(data);
         writer.Flush();
     }
+
     /*
     public void OnSendButton()
     {
@@ -115,6 +123,18 @@ public class Client : MonoBehaviour {
         Send(message);
     }
 */
+
+    IEnumerator DownloadImageFromServer(string image_name)
+    {
+        Debug.Log("http://127.0.0.1:6321/Assets/UnityNetwork/images/"+image_name);
+        WWW www = new WWW("http://localhost:6321/Assets/UnityNetwork/images/" + image_name);
+        
+        yield return www;
+        GameObject find = GameObject.FindGameObjectWithTag("Player");
+        Renderer renderer = find.GetComponent<Renderer>();
+        renderer.material.mainTexture = www.texture;
+    }
+
     private void CloseSocket()
     {
         if (!socketReady)
